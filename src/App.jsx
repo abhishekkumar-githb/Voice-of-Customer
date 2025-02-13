@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { MapPin, Clock, ChevronRight, Search, Map, ChevronDown } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  ChevronRight,
+  Search,
+  Map,
+  ChevronDown,
+} from "lucide-react";
 import Datacubeservices from "./databaseSerivce.js";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import VocImg from "./assets/VOC.png"
+import VocImg from "./assets/VOC.png";
 
 const LocationDataVisualization = () => {
   const [data, setData] = useState([]);
@@ -14,7 +21,7 @@ const LocationDataVisualization = () => {
   const [isLocationListVisible, setIsLocationListVisible] = useState(false);
 
   const customIcon = L.divIcon({
-    className: 'custom-marker',
+    className: "custom-marker",
     html: `
       <div class="relative">
         <div class="w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center transform hover:scale-110 transition-transform duration-200" style="background-color: rgba(59, 130, 246, 0.9);">
@@ -30,16 +37,16 @@ const LocationDataVisualization = () => {
     `,
     iconSize: [24, 32],
     iconAnchor: [12, 32],
-    popupAnchor: [0, -32]
+    popupAnchor: [0, -32],
   });
 
   const apiKey = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
   const databaseName = "voc";
   const collectionName = "user_location_data";
-  const filters = { 
-    workspaceId: "66c3a354c0c8c6fbadd5fed4", 
-    event: "scanned", 
-    scaleId: "66c9d21e9090b1529d108a63" 
+  const filters = {
+    workspaceId: "66c3a354c0c8c6fbadd5fed4",
+    event: "scanned",
+    scaleId: "66c9d21e9090b1529d108a63",
   };
   const limit = 1000;
   const offset = 0;
@@ -69,22 +76,26 @@ const LocationDataVisualization = () => {
   }, []);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getBounds = () => {
-    if (data.length === 0) return [[0, 0], [0, 0]];
-    const lats = data.map(loc => loc.latitude);
-    const lngs = data.map(loc => loc.longitude);
+    if (data.length === 0)
+      return [
+        [0, 0],
+        [0, 0],
+      ];
+    const lats = data.map((loc) => loc.latitude);
+    const lngs = data.map((loc) => loc.longitude);
     return [
       [Math.min(...lats) - 1, Math.min(...lngs) - 1],
-      [Math.max(...lats) + 1, Math.max(...lngs) + 1]
+      [Math.max(...lats) + 1, Math.max(...lngs) + 1],
     ];
   };
 
@@ -98,18 +109,23 @@ const LocationDataVisualization = () => {
               <img
                 src={VocImg}
                 alt="Company Logo"
-                className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
+                className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
               />
+
               <div>
-                <h1 className="text-lg sm:text-2xl font-bold text-blue-900">Voice of Customer</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-blue-900">
+                  Voice of Customer
+                </h1>
                 <p className="text-xs sm:text-sm text-blue-600 mt-1">
-                  Dashboard & Analytics
+                  Voc location trackor
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-blue-900">Locations Tracked</p>
+                <p className="text-sm font-medium text-blue-900">
+                  Locations Tracked
+                </p>
                 <p className="text-lg font-bold text-blue-600">{data.length}</p>
               </div>
               <div className="sm:hidden text-right">
@@ -125,7 +141,9 @@ const LocationDataVisualization = () => {
         {loading ? (
           <div className="text-center py-8 sm:py-12">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-sm sm:text-base text-blue-600">Loading global locations...</p>
+            <p className="mt-4 text-sm sm:text-base text-blue-600">
+              Loading global locations...
+            </p>
           </div>
         ) : error ? (
           <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm sm:text-base">
@@ -139,7 +157,11 @@ const LocationDataVisualization = () => {
               onClick={() => setIsLocationListVisible(!isLocationListVisible)}
             >
               <span className="font-semibold text-blue-900">Location List</span>
-              <ChevronDown className={`w-5 h-5 transform transition-transform ${isLocationListVisible ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-5 h-5 transform transition-transform ${
+                  isLocationListVisible ? "rotate-180" : ""
+                }`}
+              />
             </button>
 
             {/* Mobile Location List */}
@@ -161,7 +183,8 @@ const LocationDataVisualization = () => {
                           <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-blue-600" />
                             <span className="font-medium text-blue-900 text-sm">
-                              {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                              {location.latitude.toFixed(4)},{" "}
+                              {location.longitude.toFixed(4)}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
@@ -190,10 +213,10 @@ const LocationDataVisualization = () => {
                     </span>
                   </div>
                   <div className="h-[400px] sm:h-[600px] rounded-lg sm:rounded-xl overflow-hidden">
-                    <MapContainer 
+                    <MapContainer
                       bounds={getBounds()}
                       scrollWheelZoom={true}
-                      style={{ height: '100%', width: '100%' }}
+                      style={{ height: "100%", width: "100%" }}
                       className="z-0"
                     >
                       <TileLayer
@@ -211,13 +234,19 @@ const LocationDataVisualization = () => {
                         >
                           <Popup className="custom-popup">
                             <div className="bg-white p-3 rounded-lg shadow-lg">
-                              <h3 className="font-semibold text-blue-900 mb-2 text-sm">Location Details</h3>
+                              <h3 className="font-semibold text-blue-900 mb-2 text-sm">
+                                Location Details
+                              </h3>
                               <div className="space-y-1 text-xs sm:text-sm">
                                 <p className="text-gray-700">
-                                  <span className="font-medium">Latitude:</span> {location.latitude.toFixed(6)}
+                                  <span className="font-medium">Latitude:</span>{" "}
+                                  {location.latitude.toFixed(6)}
                                 </p>
                                 <p className="text-gray-700">
-                                  <span className="font-medium">Longitude:</span> {location.longitude.toFixed(6)}
+                                  <span className="font-medium">
+                                    Longitude:
+                                  </span>{" "}
+                                  {location.longitude.toFixed(6)}
                                 </p>
                                 <p className="text-gray-500 text-xs mt-2">
                                   {formatDate(location.createdAt)}
@@ -235,7 +264,9 @@ const LocationDataVisualization = () => {
               {/* Desktop Location List */}
               <div className="hidden md:block">
                 <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h2 className="text-xl font-semibold text-blue-900 mb-6">All Locations</h2>
+                  <h2 className="text-xl font-semibold text-blue-900 mb-6">
+                    All Locations
+                  </h2>
                   <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                     {data.map((location) => (
                       <div
@@ -252,7 +283,8 @@ const LocationDataVisualization = () => {
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-blue-600" />
                               <span className="font-medium text-blue-900">
-                                {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                                {location.latitude.toFixed(4)},{" "}
+                                {location.longitude.toFixed(4)}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
