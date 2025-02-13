@@ -4,6 +4,7 @@ import Datacubeservices from "./databaseSerivce.js";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import VocImg from "./assets/VOC.png"
 
 const LocationDataVisualization = () => {
   const [data, setData] = useState([]);
@@ -89,14 +90,38 @@ const LocationDataVisualization = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-8">
-        <div className="mb-4 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-2">Voice of Customer</h1>
-          <p className="text-sm sm:text-base text-blue-600">
-            Monitoring {data.length} locations worldwide
-          </p>
+      {/* Header with Logo */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4 sm:gap-6">
+              <img
+                src={VocImg}
+                alt="Company Logo"
+                className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
+              />
+              <div>
+                <h1 className="text-lg sm:text-2xl font-bold text-blue-900">Voice of Customer</h1>
+                <p className="text-xs sm:text-sm text-blue-600 mt-1">
+                  Dashboard & Analytics
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-medium text-blue-900">Locations Tracked</p>
+                <p className="text-lg font-bold text-blue-600">{data.length}</p>
+              </div>
+              <div className="sm:hidden text-right">
+                <p className="text-xs font-medium text-blue-900">Locations</p>
+                <p className="text-sm font-bold text-blue-600">{data.length}</p>
+              </div>
+            </div>
+          </div>
         </div>
+      </header>
 
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-8">
         {loading ? (
           <div className="text-center py-8 sm:py-12">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto"></div>
