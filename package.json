@@ -17,7 +17,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
-    "react-leaflet-heatmap-layer-v3": "^3.0.3-beta-1",
+    "react-leaflet-heatmap-layer": "^2.0.0",
     "tailwindcss": "^4.0.6"
   },
   "devDependencies": {
