@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapPin, Clock, ChevronRight, Search, Map } from "lucide-react";
+import { MapPin, Clock, ChevronRight, Search, Map, ChevronDown } from "lucide-react";
 import Datacubeservices from "./databaseSerivce.js";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -10,8 +10,8 @@ const LocationDataVisualization = () => {
   const [error, setError] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLocationListVisible, setIsLocationListVisible] = useState(false);
 
-  // Clean marker icon without any shadows and better transparency handling
   const customIcon = L.divIcon({
     className: 'custom-marker',
     html: `
@@ -32,7 +32,6 @@ const LocationDataVisualization = () => {
     popupAnchor: [0, -32]
   });
 
-  // Rest of the component remains exactly the same
   const apiKey = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f";
   const databaseName = "voc";
   const collectionName = "user_location_data";
@@ -56,7 +55,6 @@ const LocationDataVisualization = () => {
           limit,
           offset
         );
-        console.log("Received locations:", result.data?.length);
         setData(result.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -91,88 +89,43 @@ const LocationDataVisualization = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-blue-900 mb-2">Global Location Tracker</h1>
-          <p className="text-blue-600">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-8">
+        <div className="mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-2">Voice of Customer</h1>
+          <p className="text-sm sm:text-base text-blue-600">
             Monitoring {data.length} locations worldwide
           </p>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-blue-600">Loading global locations...</p>
+          <div className="text-center py-8 sm:py-12">
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-sm sm:text-base text-blue-600">Loading global locations...</p>
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl">
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm sm:text-base">
             Error: {error}
           </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-blue-900 flex items-center gap-2">
-                    <Map className="w-5 h-5" />
-                    World Map View
-                  </h2>
-                  <span className="text-sm text-blue-600">
-                    {data.length} locations found
-                  </span>
-                </div>
-                <div className="h-[600px] rounded-xl overflow-hidden">
-                  <MapContainer 
-                    bounds={getBounds()}
-                    scrollWheelZoom={true}
-                    style={{ height: '100%', width: '100%' }}
-                    className="z-0"
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    />
-                    {data.map((location) => (
-                      <Marker
-                        key={location._id}
-                        position={[location.latitude, location.longitude]}
-                        icon={customIcon}
-                        eventHandlers={{
-                          click: () => setSelectedLocation(location),
-                        }}
-                      >
-                        <Popup className="custom-popup">
-                          <div className="bg-white p-3 rounded-lg shadow-lg">
-                            <h3 className="font-semibold text-blue-900 mb-2">Location Details</h3>
-                            <div className="space-y-1 text-sm">
-                              <p className="text-gray-700">
-                                <span className="font-medium">Latitude:</span> {location.latitude.toFixed(6)}
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Longitude:</span> {location.longitude.toFixed(6)}
-                              </p>
-                              <p className="text-gray-500 text-xs mt-2">
-                                {formatDate(location.createdAt)}
-                              </p>
-                            </div>
-                          </div>
-                        </Popup>
-                      </Marker>
-                    ))}
-                  </MapContainer>
-                </div>
-              </div>
-            </div>
+          <div className="space-y-4 sm:space-y-6">
+            {/* Mobile Toggle for Location List */}
+            <button
+              className="w-full md:hidden bg-white rounded-xl shadow p-4 flex items-center justify-between"
+              onClick={() => setIsLocationListVisible(!isLocationListVisible)}
+            >
+              <span className="font-semibold text-blue-900">Location List</span>
+              <ChevronDown className={`w-5 h-5 transform transition-transform ${isLocationListVisible ? 'rotate-180' : ''}`} />
+            </button>
 
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-blue-900 mb-6">All Locations</h2>
-                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+            {/* Mobile Location List */}
+            {isLocationListVisible && (
+              <div className="md:hidden bg-white rounded-xl shadow-lg p-4">
+                <div className="space-y-3 max-h-[300px] overflow-y-auto">
                   {data.map((location) => (
                     <div
                       key={location._id}
                       onClick={() => setSelectedLocation(location)}
-                      className={`p-4 rounded-xl cursor-pointer transition-all ${
+                      className={`p-3 rounded-lg cursor-pointer transition-all ${
                         selectedLocation?._id === location._id
                           ? "bg-blue-100 border-blue-200"
                           : "bg-gray-50 hover:bg-blue-50"
@@ -182,19 +135,111 @@ const LocationDataVisualization = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-blue-600" />
-                            <span className="font-medium text-blue-900">
+                            <span className="font-medium text-blue-900 text-sm">
                               {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
-                            <Clock className="w-4 h-4" />
+                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" />
                             <span>{formatDate(location.createdAt)}</span>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-blue-400" />
+                        <ChevronRight className="w-4 h-4 text-blue-400" />
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+              <div className="md:col-span-2">
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg sm:text-xl font-semibold text-blue-900 flex items-center gap-2">
+                      <Map className="w-4 h-4 sm:w-5 sm:h-5" />
+                      World Map View
+                    </h2>
+                    <span className="text-xs sm:text-sm text-blue-600">
+                      {data.length} locations found
+                    </span>
+                  </div>
+                  <div className="h-[400px] sm:h-[600px] rounded-lg sm:rounded-xl overflow-hidden">
+                    <MapContainer 
+                      bounds={getBounds()}
+                      scrollWheelZoom={true}
+                      style={{ height: '100%', width: '100%' }}
+                      className="z-0"
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                      />
+                      {data.map((location) => (
+                        <Marker
+                          key={location._id}
+                          position={[location.latitude, location.longitude]}
+                          icon={customIcon}
+                          eventHandlers={{
+                            click: () => setSelectedLocation(location),
+                          }}
+                        >
+                          <Popup className="custom-popup">
+                            <div className="bg-white p-3 rounded-lg shadow-lg">
+                              <h3 className="font-semibold text-blue-900 mb-2 text-sm">Location Details</h3>
+                              <div className="space-y-1 text-xs sm:text-sm">
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Latitude:</span> {location.latitude.toFixed(6)}
+                                </p>
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Longitude:</span> {location.longitude.toFixed(6)}
+                                </p>
+                                <p className="text-gray-500 text-xs mt-2">
+                                  {formatDate(location.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MapContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop Location List */}
+              <div className="hidden md:block">
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h2 className="text-xl font-semibold text-blue-900 mb-6">All Locations</h2>
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    {data.map((location) => (
+                      <div
+                        key={location._id}
+                        onClick={() => setSelectedLocation(location)}
+                        className={`p-4 rounded-xl cursor-pointer transition-all ${
+                          selectedLocation?._id === location._id
+                            ? "bg-blue-100 border-blue-200"
+                            : "bg-gray-50 hover:bg-blue-50"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-blue-600" />
+                              <span className="font-medium text-blue-900">
+                                {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                              <Clock className="w-4 h-4" />
+                              <span>{formatDate(location.createdAt)}</span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-blue-400" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
